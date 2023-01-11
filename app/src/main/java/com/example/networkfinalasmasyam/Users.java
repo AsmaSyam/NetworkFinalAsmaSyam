@@ -39,10 +39,5 @@ public class Users {
         this.fullAddress = fullAddress;
     }
 
-    public Users(String userName, int phone, String dateOfBirth, String fullAddress) {
-        this.userName = userName;
-        this.phone = phone;
-        this.dateOfBirth = dateOfBirth;
-        this.fullAddress = fullAddress;
-    }
+
 }

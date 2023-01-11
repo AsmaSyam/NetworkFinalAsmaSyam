@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.networkfinalasmasyam.databinding.ActivityProfileBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -29,7 +30,9 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.auth.User;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -50,29 +53,26 @@ public class ProfileActivity extends AppCompatActivity {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         fireStore = FirebaseFirestore.getInstance();
 
-        DocumentReference docRef = fireStore.collection("Users").document("asma");
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d("document", "DocumentSnapshot data: " + document.getData());
+        fireStore.collection("Users").document("asma").get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                        Users users = documentSnapshot.toObject(Users.class);
+
+                          String userName = users.getUserName();
+                          String dateOfBirth = users.getDateOfBirth();
+                          String fullAddress = users.getFullAddress();
+                          int phone = users.getPhone();
+
+                            binding.userName.setText(userName);
+                            binding.dateOfBirth.setText(dateOfBirth);
+                            binding.editTextFullAddress.setText(fullAddress);
+                            binding.editTextPhone.setText(String.valueOf(phone));
 
 
-                        for (int i = 0; i < document.getData().size(); i++) {
-
-                            //document.getData().get
-
-                        }
-                    } else {
-                        Log.d("TAG", "No such document");
                     }
-                } else {
-                    Log.d("TAG", "get failed with ", task.getException());
-                }
-            }
-        });
+                });
 
 
 
@@ -165,7 +165,11 @@ public class ProfileActivity extends AppCompatActivity {
                 String dateOfBirth= binding.dateOfBirth.getText().toString();
                 String fullAddress= binding.editTextFullAddress.getText().toString();
 
-                Users users = new Users(userName , phone , dateOfBirth , fullAddress);
+                Users users = new Users();
+                users.setUserName(userName);
+                users.setDateOfBirth(dateOfBirth);
+                users.setFullAddress(fullAddress);
+                users.setPhone(phone);
 
                 fireStore.collection("Users").document(users.getUserName()).set(users);
 
