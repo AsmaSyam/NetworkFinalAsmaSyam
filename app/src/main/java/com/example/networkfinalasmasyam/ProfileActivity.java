@@ -4,7 +4,6 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.net.Uri;
@@ -22,17 +21,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.auth.User;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -53,23 +46,25 @@ public class ProfileActivity extends AppCompatActivity {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         fireStore = FirebaseFirestore.getInstance();
 
-        fireStore.collection("Users").document("asma").get()
+        fireStore.collection("Users").document(currentUser.getUid()).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
 
                         Users users = documentSnapshot.toObject(Users.class);
 
-                          String userName = users.getUserName();
-                          String dateOfBirth = users.getDateOfBirth();
-                          String fullAddress = users.getFullAddress();
-                          int phone = users.getPhone();
+                        if (users != null){
+
+                            String userName = users.getUserName();
+                            String dateOfBirth = users.getDateOfBirth();
+                            String fullAddress = users.getFullAddress();
+                            int phone = users.getPhone();
 
                             binding.userName.setText(userName);
                             binding.dateOfBirth.setText(dateOfBirth);
                             binding.editTextFullAddress.setText(fullAddress);
                             binding.editTextPhone.setText(String.valueOf(phone));
-
+                        }
 
                     }
                 });
@@ -171,7 +166,7 @@ public class ProfileActivity extends AppCompatActivity {
                 users.setFullAddress(fullAddress);
                 users.setPhone(phone);
 
-                fireStore.collection("Users").document(users.getUserName()).set(users);
+                fireStore.collection("Users").document(currentUser.getUid()).set(users);
 
 
 
