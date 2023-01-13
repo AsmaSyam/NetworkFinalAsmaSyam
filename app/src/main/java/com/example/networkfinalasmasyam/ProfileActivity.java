@@ -58,22 +58,17 @@ public class ProfileActivity extends AppCompatActivity {
         firebaseStorage = FirebaseStorage.getInstance();
 
         firebaseStorage.getReference().child("images/"+currentUser.getUid())
-                .listAll()
-                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                .getDownloadUrl()
+                .addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
-                    public void onSuccess(ListResult listResult) {
+                    public void onSuccess(Uri uri) {
 
-                        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-
-                // ImageView in your Activity
                         ImageView imageView = findViewById(R.id.imageView);
 
                         // Download directly from StorageReference using Glide
-                     // (See MyAppGlideModule for Loader registration)
                         Glide.with(ProfileActivity.this)
-                                .load(storageReference)
+                                .load(uri)
                                 .into(imageView);
-
                     }
                 });
 
