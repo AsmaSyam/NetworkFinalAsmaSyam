@@ -164,7 +164,7 @@ public class ProfileActivity extends AppCompatActivity {
                 uploadImageForFireBase();
 
 
-                currentUser.updateProfile(userProfileChangeRequest)
+              /*  currentUser.updateProfile(userProfileChangeRequest)
                         .addOnCompleteListener(ProfileActivity.this, new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
@@ -177,7 +177,7 @@ public class ProfileActivity extends AppCompatActivity {
                                     Toast.makeText(ProfileActivity.this, error, Toast.LENGTH_SHORT).show();
                                 }
                             }
-                        });
+                        });*/
 
                 String userName= binding.userName.getText().toString();
                 try {
@@ -206,8 +206,8 @@ public class ProfileActivity extends AppCompatActivity {
 
 
 
-        Uri img = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl();
-        binding.imageView.setImageURI(img);
+       /* Uri img = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl();
+        binding.imageView.setImageURI(img);*/
 
     }
 
@@ -231,6 +231,10 @@ public class ProfileActivity extends AppCompatActivity {
                 //في المكان هاد بقدر اخزن الرابط هاد في الفيرستور وبكون ربطت ستورج بالفير ستور وهو مطلوب.
                 return  firebaseStorage.getReference()
                         .child("images/"+currentUser.getUid()).getDownloadUrl();
+
+               // fireStore.collection("Users").document(currentUser.getUid()).set();
+
+
             }
         });
 
