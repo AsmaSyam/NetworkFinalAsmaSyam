@@ -11,10 +11,13 @@ import android.os.Bundle;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 
+import com.bumptech.glide.Glide;
 import com.example.networkfinalasmasyam.databinding.ActivityProfileBinding;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -23,6 +26,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.Calendar;
@@ -33,9 +40,12 @@ public class ProfileActivity extends AppCompatActivity {
     FirebaseUser currentUser ;
 
     FirebaseFirestore fireStore ;
+    FirebaseStorage firebaseStorage ;
 
     UserProfileChangeRequest userProfileChangeRequest ;
     int phone ;
+
+    Uri image ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +55,27 @@ public class ProfileActivity extends AppCompatActivity {
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         fireStore = FirebaseFirestore.getInstance();
+        firebaseStorage = FirebaseStorage.getInstance();
+
+        firebaseStorage.getReference().child("images/"+currentUser.getUid())
+                .listAll()
+                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                    @Override
+                    public void onSuccess(ListResult listResult) {
+
+                        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+
+                // ImageView in your Activity
+                        ImageView imageView = findViewById(R.id.imageView);
+
+                        // Download directly from StorageReference using Glide
+                     // (See MyAppGlideModule for Loader registration)
+                        Glide.with(ProfileActivity.this)
+                                .load(storageReference)
+                                .into(imageView);
+
+                    }
+                });
 
         fireStore.collection("Users").document(currentUser.getUid()).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -78,6 +109,7 @@ public class ProfileActivity extends AppCompatActivity {
                     public void onActivityResult(Uri result) {
 
                         binding.imageView.setImageURI(result);
+                        image = result;
                     }
                 });
 
@@ -134,6 +166,9 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                uploadImageForFireBase();
+
+
                 currentUser.updateProfile(userProfileChangeRequest)
                         .addOnCompleteListener(ProfileActivity.this, new OnCompleteListener<Void>() {
                             @Override
@@ -170,6 +205,7 @@ public class ProfileActivity extends AppCompatActivity {
 
 
 
+
             }
         });
 
@@ -177,6 +213,31 @@ public class ProfileActivity extends AppCompatActivity {
 
         Uri img = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl();
         binding.imageView.setImageURI(img);
+
+    }
+
+    private void uploadImageForFireBase() {
+
+        UploadTask uploadTask =  firebaseStorage.getReference()
+                .child("images/"+currentUser.getUid())
+                .putFile(image);
+
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+            }
+        });
+
+        Task<Uri> task = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+
+                //في المكان هاد بقدر اخزن الرابط هاد في الفيرستور وبكون ربطت ستورج بالفير ستور وهو مطلوب.
+                return  firebaseStorage.getReference()
+                        .child("images/"+currentUser.getUid()).getDownloadUrl();
+            }
+        });
 
     }
 }
