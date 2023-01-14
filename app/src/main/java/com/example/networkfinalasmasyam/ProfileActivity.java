@@ -6,19 +6,17 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 
 import com.bumptech.glide.Glide;
 import com.example.networkfinalasmasyam.databinding.ActivityProfileBinding;
 import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,8 +25,6 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.ListResult;
-import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
@@ -152,9 +148,9 @@ public class ProfileActivity extends AppCompatActivity {
 
 
 
-         userProfileChangeRequest = new UserProfileChangeRequest.Builder()
+        /* userProfileChangeRequest = new UserProfileChangeRequest.Builder()
                 .setPhotoUri(Uri.parse(String.valueOf(binding.imageView.getImageAlpha())))
-                .build();
+                .build();*/
 
 
         binding.buttonSave.setOnClickListener(new View.OnClickListener() {
@@ -198,8 +194,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                 fireStore.collection("Users").document(currentUser.getUid()).set(users);
 
-
-
+               // startActivity(new Intent(ProfileActivity.this , MainActivity.class));
 
             }
         });
@@ -213,30 +208,34 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void uploadImageForFireBase() {
 
-        UploadTask uploadTask =  firebaseStorage.getReference()
-                .child("images/"+currentUser.getUid())
-                .putFile(image);
+        if (image != null){
 
-        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+            UploadTask uploadTask =  firebaseStorage.getReference()
+                    .child("images/"+currentUser.getUid())
+                    .putFile(image);
 
-            }
-        });
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-        Task<Uri> task = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-            @Override
-            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                }
+            });
 
-                //في المكان هاد بقدر اخزن الرابط هاد في الفيرستور وبكون ربطت ستورج بالفير ستور وهو مطلوب.
-                return  firebaseStorage.getReference()
-                        .child("images/"+currentUser.getUid()).getDownloadUrl();
+            Task<Uri> task = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
 
-               // fireStore.collection("Users").document(currentUser.getUid()).set();
+                    //في المكان هاد بقدر اخزن الرابط هاد في الفيرستور وبكون ربطت ستورج بالفير ستور وهو مطلوب.
+                    return  firebaseStorage.getReference()
+                            .child("images/"+currentUser.getUid()).getDownloadUrl();
+
+                    // fireStore.collection("Users").document(currentUser.getUid()).set();
 
 
-            }
-        });
+                }
+            });
+        }
+
 
     }
 }

@@ -37,20 +37,26 @@ public class RegisterActivity extends AppCompatActivity {
                String email = binding.email.getText().toString();
                String password = binding.password.getText().toString();
 
-                firebaseAuth.createUserWithEmailAndPassword(email , password)
-                        .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
+               if (!(email.isEmpty() && password.isEmpty())){
 
-                                if(task.isSuccessful()){
-                                    Log.d("RegisterActivity" ,task.getResult().getUser().toString() );
-                                    startActivity(new Intent(getApplicationContext() , ProfileActivity.class));
-                                }else {
-                                    Toast.makeText(RegisterActivity.this,
-                                            task.getException().toString(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+                   firebaseAuth.createUserWithEmailAndPassword(email , password)
+                           .addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
+                               @Override
+                               public void onComplete(@NonNull Task<AuthResult> task) {
+
+                                   if(task.isSuccessful()){
+                                       Log.d("RegisterActivity" ,task.getResult().getUser().toString() );
+                                       startActivity(new Intent(getApplicationContext() , ProfileActivity.class));
+                                   }else {
+                                       Toast.makeText(RegisterActivity.this,
+                                               task.getException().toString(), Toast.LENGTH_SHORT).show();
+                                   }
+                               }
+                           });
+
+               }
+
+
 
             }
         });

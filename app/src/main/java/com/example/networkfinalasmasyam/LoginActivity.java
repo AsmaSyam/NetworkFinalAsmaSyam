@@ -32,23 +32,29 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+
                 String email = binding.Email.getText().toString();
                 String password = binding.Password.getText().toString();
 
-                firebaseAuth.signInWithEmailAndPassword(email , password)
-                        .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (!(email.isEmpty() && password.isEmpty())){
 
-                                if(task.isSuccessful()){
-                                    Log.d("LoginActivity" ,task.getResult().getUser().toString() );
-                                    startActivity(new Intent(getApplicationContext() , ProfileActivity.class));
-                                }else {
-                                    Toast.makeText(LoginActivity.this, "Error while Login"
-                                            + task.getException().toString(), Toast.LENGTH_SHORT).show();
+                    firebaseAuth.signInWithEmailAndPassword(email , password)
+                            .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+
+                                    if(task.isSuccessful()){
+                                        Log.d("LoginActivity" ,task.getResult().getUser().toString() );
+                                        startActivity(new Intent(getApplicationContext() , ProfileActivity.class));
+                                    }else {
+                                        Toast.makeText(LoginActivity.this, "Error while Login"
+                                                + task.getException().toString(), Toast.LENGTH_SHORT).show();
+                                    }
                                 }
-                            }
-                        });
+                            });
+                }
+
+
 
             }
         });
