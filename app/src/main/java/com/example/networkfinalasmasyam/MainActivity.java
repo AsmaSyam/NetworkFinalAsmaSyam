@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.networkfinalasmasyam.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -13,11 +14,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     FirebaseFirestore fireStore ;
     FirebaseStorage firebaseStorage ;
-    List<NewsClass> list ;
+
     String jj ;
 
 
@@ -43,7 +45,8 @@ public class MainActivity extends AppCompatActivity {
         firebaseStorage = FirebaseStorage.getInstance();
 
 
-        firebaseStorage.getReference().child("newsImages/"+currentUser.getUid())
+
+        firebaseStorage.getReference().child("newsImages")
                 .listAll()
                 .addOnSuccessListener(new OnSuccessListener<ListResult>() {
                     @Override
@@ -63,32 +66,28 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-           fireStore.collection("News")
-                .orderBy("policy")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+           fireStore.collection("News").document(currentUser.getUid())
+                   .get()
+                  .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                      @Override
+                      public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
-                        if (task.isSuccessful()){
-                            list = task.getResult().toObjects(NewsClass.class);
-                        }
+                          if(task.isSuccessful()){
+                              NewsClass newsClass = task.getResult().toObject(NewsClass.class);
+                              List<NewsClass> list = new ArrayList<>() ;
+                              list.add(newsClass);
+                              NewsAdapter adapter = new NewsAdapter(list , MainActivity.this);
+                              binding.recyclerAdapter.setAdapter(adapter);
+                              RecyclerView.LayoutManager lm = new LinearLayoutManager(MainActivity.this , RecyclerView.VERTICAL ,
+                                      false);
+                              binding.recyclerAdapter.setLayoutManager(lm);
+                          }else {
+                              Log.d("TAG", "onComplete: " + task.getException().toString());
 
-                       /* for (int i = 0; i < list.size(); i++) {
+                          }
 
-                            jj =  list.get(i).getNews();
-                        }
-                        Log.d("size", "size: "+jj);*/
-
-
-                        NewsAdapter adapter = new NewsAdapter(list , MainActivity.this);
-                        binding.recyclerAdapter.setAdapter(adapter);
-                        RecyclerView.LayoutManager lm = new LinearLayoutManager(MainActivity.this , RecyclerView.VERTICAL ,
-                                false);
-                        binding.recyclerAdapter.setLayoutManager(lm);
-
-                    }
-                });
+                      }
+                  });
 
     }
 }

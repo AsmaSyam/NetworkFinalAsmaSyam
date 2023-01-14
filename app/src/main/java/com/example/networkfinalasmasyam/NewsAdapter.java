@@ -2,6 +2,7 @@ package com.example.networkfinalasmasyam;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,7 +30,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     public NewsAdapter(List<NewsClass> list  , Context context) {
         this.list = list;
         this.context = context ;
-        this.referenceList = referenceList ;
     }
     public NewsAdapter(Context context , List<StorageReference> referenceList) {
         this.context = context ;
@@ -48,20 +48,30 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     @Override
     public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
 
-        holder.newsText.setText(list.get(position).getNews());
+       // holder.newsText.setText(list.get(position).getNews());
 
-      //  StorageReference reference = referenceList.get(position);
+         StorageReference reference = referenceList.get(position);
 
+         Glide.with(context)
+                 .load(reference)
+                 .into(holder.newsImage);
+
+        holder.favoriteImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
 
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return referenceList.size();
     }
 
     public int getItemCounts() {
-        return referenceList.size();
+        return list.size();
     }
 
     public class NewsViewHolder extends RecyclerView.ViewHolder{
