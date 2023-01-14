@@ -9,19 +9,33 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.networkfinalasmasyam.databinding.ItemNewsBinding;
+import com.google.android.gms.tasks.OnSuccessListener;
 
-import java.util.ArrayList;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.List;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
 
-    ArrayList<NewsClass> arrayList ;
+    List<StorageReference> referenceList ;
+    List<NewsClass> list ;
     Context context ;
 
-    public NewsAdapter(ArrayList<NewsClass> arrayList , Context context) {
-        this.arrayList = arrayList;
+
+
+    public NewsAdapter(List<NewsClass> list  , Context context) {
+        this.list = list;
         this.context = context ;
+        this.referenceList = referenceList ;
     }
+    public NewsAdapter(Context context , List<StorageReference> referenceList) {
+        this.context = context ;
+        this.referenceList = referenceList ;
+    }
+
 
     @NonNull
     @Override
@@ -34,12 +48,20 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     @Override
     public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
 
-        holder.newsText.setText(arrayList.get(position).news);
+        holder.newsText.setText(list.get(position).getNews());
+
+      //  StorageReference reference = referenceList.get(position);
+
+
     }
 
     @Override
     public int getItemCount() {
-        return arrayList.size();
+        return list.size();
+    }
+
+    public int getItemCounts() {
+        return referenceList.size();
     }
 
     public class NewsViewHolder extends RecyclerView.ViewHolder{

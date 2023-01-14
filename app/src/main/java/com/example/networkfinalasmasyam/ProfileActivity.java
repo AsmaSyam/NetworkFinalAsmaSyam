@@ -194,7 +194,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                 fireStore.collection("Users").document(currentUser.getUid()).set(users);
 
-               // startActivity(new Intent(ProfileActivity.this , MainActivity.class));
+                startActivity(new Intent(ProfileActivity.this , MainActivity.class));
 
             }
         });
