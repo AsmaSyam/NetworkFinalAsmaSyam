@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 
@@ -49,21 +50,20 @@ public class MainActivity extends AppCompatActivity implements Listener{
         firebaseStorage = FirebaseStorage.getInstance();
 
 
-
-        firebaseStorage.getReference().child("newsImages/")
+        firebaseStorage.getReference().child("newsImages")
                 .listAll()
                 .addOnSuccessListener(new OnSuccessListener<ListResult>() {
                     @Override
                     public void onSuccess(ListResult listResult) {
 
-                        NewsAdapter adapter = new NewsAdapter(MainActivity.this , listResult.getItems());
+                        NewsAdapter adapter = new NewsAdapter(MainActivity.this, listResult.getItems());
                         binding.recyclerAdapter.setAdapter(adapter);
-                        RecyclerView.LayoutManager lm = new LinearLayoutManager(MainActivity.this , RecyclerView.VERTICAL ,
+                        RecyclerView.LayoutManager lm = new LinearLayoutManager(MainActivity.this, RecyclerView.VERTICAL,
                                 false);
                         binding.recyclerAdapter.setLayoutManager(lm);
 
-                        Toast.makeText(MainActivity.this, ""+ listResult.getItems(), Toast.LENGTH_SHORT).show();
-                      //  Log.d("referenceList", "referenceList: " + listResult.getItems());
+                        Toast.makeText(MainActivity.this, "" + listResult.getItems(), Toast.LENGTH_SHORT).show();
+                        //  Log.d("referenceList", "referenceList: " + listResult.getItems());
 
                         // Download directly from StorageReference using Glide
                        /* Glide.with(MainActivity.this)
@@ -73,29 +73,34 @@ public class MainActivity extends AppCompatActivity implements Listener{
                     }
                 });
 
-           fireStore.collection("News").document(currentUser.getUid())
-                   .get()
-                  .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                      @Override
-                      public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+        fireStore.collection("News")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                          if(task.isSuccessful()){
-                              NewsClass newsClass = task.getResult().toObject(NewsClass.class);
-                              List<NewsClass> list = new ArrayList<>() ;
-                              list.add(newsClass);
-                              NewsAdapter adapter = new NewsAdapter(list , MainActivity.this);
-                              binding.recyclerAdapter.setAdapter(adapter);
-                              RecyclerView.LayoutManager lm = new LinearLayoutManager(MainActivity.this , RecyclerView.VERTICAL ,
-                                      false);
-                              binding.recyclerAdapter.setLayoutManager(lm);
-                          }else {
-                              Log.d("TAG", "onComplete: " + task.getException().getMessage());
-                          }
-                      }
-                  });
+                        if (task.isSuccessful()) {
+
+                            List<NewsClass> list = new ArrayList<>();
+
+                            for (DocumentSnapshot document : task.getResult()) {
+                                NewsClass newsClass = document.toObject(NewsClass.class);
+                                newsClass.setDocumentId(document.getId());
+                                list.add(newsClass);
+                            }
+
+                            NewsAdapter adapter = new NewsAdapter(list, MainActivity.this);
+                            binding.recyclerAdapter.setAdapter(adapter);
+                            RecyclerView.LayoutManager lm = new LinearLayoutManager(MainActivity.this, RecyclerView.VERTICAL,
+                                    false);
+                            binding.recyclerAdapter.setLayoutManager(lm);
+                        } else {
+                            Log.d("TAG", "onComplete: " + task.getException().getMessage());
+                        }
+                    }
+                });
+
     }
-
-
     @Override
     public void IsFavorite(int position, String policy) {
 
@@ -119,7 +124,8 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
         NewsClass newsClass = new NewsClass();
         newsClass.setPolicy(Policy);
-        fireStore.collection("Favorite").document(currentUser.getUid()).set(newsClass)
+        fireStore.collection("Favorite").document(currentUser.getUid()).collection("MyFav")
+                .document(newsClass.getDocumentId()).set(newsClass)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
