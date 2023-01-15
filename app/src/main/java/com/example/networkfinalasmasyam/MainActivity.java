@@ -50,28 +50,28 @@ public class MainActivity extends AppCompatActivity implements Listener{
         firebaseStorage = FirebaseStorage.getInstance();
 
 
-        firebaseStorage.getReference().child("newsImages")
-                .listAll()
-                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
-                    @Override
-                    public void onSuccess(ListResult listResult) {
-
-                        NewsAdapter adapter = new NewsAdapter(MainActivity.this, listResult.getItems());
-                        binding.recyclerAdapter.setAdapter(adapter);
-                        RecyclerView.LayoutManager lm = new LinearLayoutManager(MainActivity.this, RecyclerView.VERTICAL,
-                                false);
-                        binding.recyclerAdapter.setLayoutManager(lm);
-
-                        Toast.makeText(MainActivity.this, "" + listResult.getItems(), Toast.LENGTH_SHORT).show();
-                        //  Log.d("referenceList", "referenceList: " + listResult.getItems());
-
-                        // Download directly from StorageReference using Glide
-                       /* Glide.with(MainActivity.this)
-                                .load(listResult.getItems())
-                                .into(holder.newsImage);*/
-
-                    }
-                });
+       // firebaseStorage.getReference().child("newsImages")
+         //       .listAll()
+           //     .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+             //       @Override
+               //     public void onSuccess(ListResult listResult) {
+//
+  //                      NewsAdapter adapter = new NewsAdapter(MainActivity.this, listResult.getItems());
+    //                    binding.recyclerAdapter.setAdapter(adapter);
+      //                  RecyclerView.LayoutManager lm = new LinearLayoutManager(MainActivity.this, RecyclerView.VERTICAL,
+          //                      false);
+        //                binding.recyclerAdapter.setLayoutManager(lm);
+//
+  //                      Toast.makeText(MainActivity.this, "" + listResult.getItems(), Toast.LENGTH_SHORT).show();
+    //                    //  Log.d("referenceList", "referenceList: " + listResult.getItems());
+//
+  //                      // Download directly from StorageReference using Glide
+    //                   /* Glide.with(MainActivity.this)
+      //                          .load(listResult.getItems())
+        //                        .into(holder.newsImage);*/
+//
+  //                  }
+    //            });
 
         fireStore.collection("News")
                 .get()
@@ -162,8 +162,6 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 });
 
     }
-
-
 
 
 }

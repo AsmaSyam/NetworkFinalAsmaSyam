@@ -13,13 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.networkfinalasmasyam.databinding.ItemNewsBinding;
 
-import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
 
-    List<StorageReference> referenceList ;
     List<NewsClass> list ;
     Context context ;
 
@@ -30,10 +28,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         this.list = list;
         this.context = context ;
     }
-    public NewsAdapter(Context context , List<StorageReference> referenceList) {
-        this.context = context ;
-        this.referenceList = referenceList ;
-    }
+
 
 
     @NonNull
@@ -48,13 +43,13 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
 
         int pos = position ;
-       // holder.newsText.setText(list.get(position).getNews());
-
-         StorageReference reference = referenceList.get(position);
 
          Glide.with(context)
-                 .load(reference)
+                 .load(list.get(pos).getImage())
                  .into(holder.newsImage);
+
+        String policy = list.get(pos).getPolicy();
+         holder.newsText.setText(policy);
 
         holder.favoriteImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,12 +63,10 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
     @Override
     public int getItemCount() {
-        return referenceList.size();
-    }
-
-    public int getItemCounts() {
         return list.size();
     }
+
+
 
     public class NewsViewHolder extends RecyclerView.ViewHolder{
 
