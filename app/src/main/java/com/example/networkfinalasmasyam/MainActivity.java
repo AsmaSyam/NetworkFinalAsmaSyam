@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
                                       false);
                               binding.recyclerAdapter.setLayoutManager(lm);
                           }else {
-                              Log.d("TAG", "onComplete: " + task.getException().toString());
+                              Log.d("TAG", "onComplete: " + task.getException().getMessage());
                           }
                       }
                   });
@@ -102,11 +102,12 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
             deleteFromFavorite();
             // in favorite , remove from favorite
-
+            isInMyFavorite = true ;
         }else{
             // not in favorite , add to favorite
 
             addToFavorite();
+            isInMyFavorite = false ;
         }
     }
 
@@ -123,7 +124,8 @@ public class MainActivity extends AppCompatActivity implements Listener{
                         if (task.isSuccessful()){
                             Toast.makeText(MainActivity.this, "Added to favorite" , Toast.LENGTH_SHORT).show();
                         }else {
-                            Toast.makeText(MainActivity.this, "Failed to add to favorite ", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Failed to add to favorite " +
+                                    task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
 
                     }
