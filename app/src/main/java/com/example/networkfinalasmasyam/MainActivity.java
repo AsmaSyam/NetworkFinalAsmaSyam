@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
 
 
-        firebaseStorage.getReference().child("newsImages")
+        firebaseStorage.getReference().child("newsImages/")
                 .listAll()
                 .addOnSuccessListener(new OnSuccessListener<ListResult>() {
                     @Override
@@ -61,6 +61,9 @@ public class MainActivity extends AppCompatActivity implements Listener{
                         RecyclerView.LayoutManager lm = new LinearLayoutManager(MainActivity.this , RecyclerView.VERTICAL ,
                                 false);
                         binding.recyclerAdapter.setLayoutManager(lm);
+
+                        Toast.makeText(MainActivity.this, ""+ listResult.getItems(), Toast.LENGTH_SHORT).show();
+                      //  Log.d("referenceList", "referenceList: " + listResult.getItems());
 
                         // Download directly from StorageReference using Glide
                        /* Glide.with(MainActivity.this)
@@ -153,5 +156,8 @@ public class MainActivity extends AppCompatActivity implements Listener{
                 });
 
     }
+
+
+
 
 }

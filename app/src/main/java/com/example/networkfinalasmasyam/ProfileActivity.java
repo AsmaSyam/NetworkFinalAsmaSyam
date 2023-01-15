@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -194,8 +196,6 @@ public class ProfileActivity extends AppCompatActivity {
 
                 fireStore.collection("Users").document(currentUser.getUid()).set(users);
 
-                startActivity(new Intent(ProfileActivity.this , MainActivity.class));
-
             }
         });
 
@@ -237,5 +237,27 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu , menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.favorite:
+                startActivity(new Intent(ProfileActivity.this , FavoriteActivity.class));
+                break;
+            case R.id.logOut:
+                finish();
+                break;
+            case R.id.mainActivity:
+                startActivity(new Intent(ProfileActivity.this , MainActivity.class));
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
