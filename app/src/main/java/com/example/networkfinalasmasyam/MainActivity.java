@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.networkfinalasmasyam.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,7 +23,7 @@ import com.google.firebase.storage.ListResult;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Listener{
 
     ActivityMainBinding binding ;
 
@@ -30,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
 
     FirebaseFirestore fireStore ;
     FirebaseStorage firebaseStorage ;
+
+    boolean isInMyFavorite ;
+    String Policy ;
 
     String jj ;
 
@@ -83,11 +87,69 @@ public class MainActivity extends AppCompatActivity {
                               binding.recyclerAdapter.setLayoutManager(lm);
                           }else {
                               Log.d("TAG", "onComplete: " + task.getException().toString());
-
                           }
-
                       }
                   });
+    }
+
+
+    @Override
+    public void IsFavorite(int position, String policy) {
+
+        Policy = policy;
+
+        if(isInMyFavorite){
+
+            deleteFromFavorite();
+            // in favorite , remove from favorite
+
+        }else{
+            // not in favorite , add to favorite
+
+            addToFavorite();
+        }
+    }
+
+
+    public void addToFavorite(){
+
+        NewsClass newsClass = new NewsClass();
+        newsClass.setPolicy(Policy);
+        fireStore.collection("Favorite").document(currentUser.getUid()).set(newsClass)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        if (task.isSuccessful()){
+                            Toast.makeText(MainActivity.this, "Added to favorite" , Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(MainActivity.this, "Failed to add to favorite ", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
 
     }
+
+    public void deleteFromFavorite(){
+
+        fireStore.collection("Favorite").document(currentUser.getUid())
+                .delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        if(task.isSuccessful()){
+                            Toast.makeText(MainActivity.this, "Remove from your favorite List...", Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(MainActivity.this, "Failed to remove from your favorite due to" +
+                                    task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+
+                        }
+
+                    }
+                });
+
+    }
+
 }

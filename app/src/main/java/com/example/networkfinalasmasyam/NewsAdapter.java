@@ -12,9 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.networkfinalasmasyam.databinding.ItemNewsBinding;
-import com.google.android.gms.tasks.OnSuccessListener;
 
-import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
@@ -25,6 +23,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     List<NewsClass> list ;
     Context context ;
 
+    Listener listener ;
 
 
     public NewsAdapter(List<NewsClass> list  , Context context) {
@@ -48,6 +47,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     @Override
     public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
 
+        int pos = position ;
        // holder.newsText.setText(list.get(position).getNews());
 
          StorageReference reference = referenceList.get(position);
@@ -60,6 +60,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             @Override
             public void onClick(View view) {
 
+                listener.IsFavorite(pos , holder.newsText.getText().toString());
             }
         });
 
