@@ -29,10 +29,10 @@ public class LoginActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
 
-         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        /* FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         if (!(firebaseUser==null)){
             startActivity(new Intent(LoginActivity.this , ProfileActivity.class));
-        }
+        }*/
 
 
         binding.Login.setOnClickListener(new View.OnClickListener() {
@@ -40,10 +40,15 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
 
 
+
                 String email = binding.Email.getText().toString();
                 String password = binding.Password.getText().toString();
 
-                if (!(email.isEmpty() && password.isEmpty())){
+                if (email.isEmpty() && password.isEmpty()){
+                    Toast.makeText(LoginActivity.this, "Inter Your Email And Password", Toast.LENGTH_SHORT).show();
+                }else if (email.isEmpty() || password.isEmpty()){
+                    Toast.makeText(LoginActivity.this, "Inter Your Email And Password", Toast.LENGTH_SHORT).show();
+                }else {
 
                     firebaseAuth.signInWithEmailAndPassword(email , password)
                             .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
@@ -60,9 +65,6 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                             });
                 }
-
-
-
             }
         });
 

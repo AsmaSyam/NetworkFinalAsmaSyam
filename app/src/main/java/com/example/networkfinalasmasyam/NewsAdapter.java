@@ -24,9 +24,18 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     Listener listener ;
 
 
+
+
+    public NewsAdapter(List<NewsClass> list  , Context context ,  Listener listener) {
+        this.list = list;
+        this.context = context ;
+        this.listener = listener ;
+    }
+
     public NewsAdapter(List<NewsClass> list  , Context context) {
         this.list = list;
         this.context = context ;
+        this.listener = listener ;
     }
 
 
@@ -44,18 +53,25 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
         int pos = position ;
 
+         String image = list.get(pos).getImage();
          Glide.with(context)
-                 .load(list.get(pos).getImage())
+                 .load(image)
                  .into(holder.newsImage);
 
         String policy = list.get(pos).getPolicy();
          holder.newsText.setText(policy);
 
+         String documentId = list.get(pos).getDocumentId();
+
         holder.favoriteImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                listener.IsFavorite(pos , holder.newsText.getText().toString());
+                NewsClass newsClass = new NewsClass();
+                newsClass.setPolicy(policy);
+                newsClass.setImage(image);
+                newsClass.setDocumentId(documentId);
+                listener.IsFavorite(pos , newsClass);
             }
         });
 

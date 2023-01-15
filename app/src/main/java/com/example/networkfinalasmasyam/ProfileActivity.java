@@ -40,7 +40,6 @@ public class ProfileActivity extends AppCompatActivity {
     FirebaseFirestore fireStore ;
     FirebaseStorage firebaseStorage ;
 
-    UserProfileChangeRequest userProfileChangeRequest ;
     int phone ;
 
     Uri image ;

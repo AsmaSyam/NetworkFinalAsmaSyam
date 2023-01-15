@@ -11,15 +11,13 @@ import android.widget.Toast;
 
 import com.example.networkfinalasmasyam.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.ListResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +32,8 @@ public class MainActivity extends AppCompatActivity implements Listener{
     FirebaseStorage firebaseStorage ;
 
     boolean isInMyFavorite ;
-    String Policy ;
 
-    String jj ;
+    NewsClass newsClass ;
 
 
     @Override
@@ -83,13 +80,13 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
                             List<NewsClass> list = new ArrayList<>();
 
-                            for (DocumentSnapshot document : task.getResult()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
                                 NewsClass newsClass = document.toObject(NewsClass.class);
                                 newsClass.setDocumentId(document.getId());
                                 list.add(newsClass);
                             }
 
-                            NewsAdapter adapter = new NewsAdapter(list, MainActivity.this);
+                            NewsAdapter adapter = new NewsAdapter(list, MainActivity.this , MainActivity.this);
                             binding.recyclerAdapter.setAdapter(adapter);
                             RecyclerView.LayoutManager lm = new LinearLayoutManager(MainActivity.this, RecyclerView.VERTICAL,
                                     false);
@@ -102,19 +99,20 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
     }
     @Override
-    public void IsFavorite(int position, String policy) {
+    public void IsFavorite(int position, NewsClass newsClass) {
 
-        Policy = policy;
+        newsClass = newsClass ;
 
+        Log.d("newsClass", "IsFavorite: "+ newsClass);
         if(isInMyFavorite){
 
-            deleteFromFavorite();
+            addToFavorite();
             // in favorite , remove from favorite
             isInMyFavorite = true ;
         }else{
             // not in favorite , add to favorite
 
-            addToFavorite();
+            deleteFromFavorite();
             isInMyFavorite = false ;
         }
     }
@@ -122,9 +120,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
     public void addToFavorite(){
 
-        NewsClass newsClass = new NewsClass();
-        newsClass.setPolicy(Policy);
-        fireStore.collection("Favorite").document(currentUser.getUid()).collection("MyFav")
+        fireStore.collection("Favorite").document(currentUser.getUid()).collection("MyFavorite")
                 .document(newsClass.getDocumentId()).set(newsClass)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -144,7 +140,8 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
     public void deleteFromFavorite(){
 
-        fireStore.collection("Favorite").document(currentUser.getUid())
+        fireStore.collection("Favorite").document(currentUser.getUid()).collection("MyFavorite")
+                .document(newsClass.getDocumentId())
                 .delete()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
