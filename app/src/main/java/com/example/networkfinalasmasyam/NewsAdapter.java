@@ -32,11 +32,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         this.listener = listener ;
     }
 
-    public NewsAdapter(List<NewsClass> list  , Context context) {
-        this.list = list;
-        this.context = context ;
-        this.listener = listener ;
-    }
 
    public void setData(List<NewsClass> list){
         this.list = list ;
@@ -63,19 +58,19 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                  .load(image)
                  .into(holder.newsImage);
 
-        String policy = list.get(pos).getPolicy();
+         String policy = list.get(pos).getPolicy();
          holder.newsText.setText(policy);
 
          String documentId = list.get(pos).getDocumentId();
 
-        holder.favoriteImage.setOnClickListener(new View.OnClickListener() {
+         holder.favoriteImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
 
                 listener.IsFavorite(pos , list.get(pos));
-            }
-        });
+             }
+         });
 
     }
 

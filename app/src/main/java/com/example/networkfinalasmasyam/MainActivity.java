@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
         firebaseStorage = FirebaseStorage.getInstance();
 
 
-         adapter = new NewsAdapter(new ArrayList<>(), MainActivity.this , this);
+        adapter = new NewsAdapter(new ArrayList<>(), MainActivity.this , this);
         binding.recyclerAdapter.setAdapter(adapter);
         RecyclerView.LayoutManager lm = new LinearLayoutManager(MainActivity.this, RecyclerView.VERTICAL,
                 false);

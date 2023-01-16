@@ -32,6 +32,9 @@ public class FavoriteActivity extends AppCompatActivity implements Listener {
 
     NewsClass newsClass ;
 
+    NewsAdapter adapter ;
+    List<NewsClass> list ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,8 +53,8 @@ public class FavoriteActivity extends AppCompatActivity implements Listener {
 
                        if(task.isSuccessful()){
 
-                            List<NewsClass> newsClass = task.getResult().toObjects(NewsClass.class);
-                            NewsAdapter adapter = new NewsAdapter(newsClass , FavoriteActivity.this  , FavoriteActivity.this);
+                           list = task.getResult().toObjects(NewsClass.class);
+                            adapter = new NewsAdapter(list , FavoriteActivity.this  , FavoriteActivity.this);
                             binding.recyclerAdapter.setAdapter(adapter);
                             RecyclerView.LayoutManager lm = new LinearLayoutManager(FavoriteActivity.this , RecyclerView.VERTICAL ,
                                     false);
@@ -72,8 +75,8 @@ public class FavoriteActivity extends AppCompatActivity implements Listener {
 
         this.newsClass = newsClass ;
         deleteFromFavorite();
-
-
+        list.remove(position);
+        adapter.notifyDataSetChanged();
     }
 
     public void deleteFromFavorite(){
@@ -87,6 +90,7 @@ public class FavoriteActivity extends AppCompatActivity implements Listener {
 
                         if(task.isSuccessful()){
                             Toast.makeText(FavoriteActivity.this, "Remove from your favorite List...", Toast.LENGTH_SHORT).show();
+
                         }else {
                             Toast.makeText(FavoriteActivity.this, "Failed to remove from your favorite due to" +
                                     task.getException().getMessage(), Toast.LENGTH_SHORT).show();
