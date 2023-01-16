@@ -7,6 +7,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.networkfinalasmasyam.databinding.ActivityMainBinding;
@@ -37,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
     NewsClass news ;
 
+    NewsAdapter adapter ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,28 +53,12 @@ public class MainActivity extends AppCompatActivity implements Listener{
         firebaseStorage = FirebaseStorage.getInstance();
 
 
-       // firebaseStorage.getReference().child("newsImages")
-         //       .listAll()
-           //     .addOnSuccessListener(new OnSuccessListener<ListResult>() {
-             //       @Override
-               //     public void onSuccess(ListResult listResult) {
-//
-  //                      NewsAdapter adapter = new NewsAdapter(MainActivity.this, listResult.getItems());
-    //                    binding.recyclerAdapter.setAdapter(adapter);
-      //                  RecyclerView.LayoutManager lm = new LinearLayoutManager(MainActivity.this, RecyclerView.VERTICAL,
-          //                      false);
-        //                binding.recyclerAdapter.setLayoutManager(lm);
-//
-  //                      Toast.makeText(MainActivity.this, "" + listResult.getItems(), Toast.LENGTH_SHORT).show();
-    //                    //  Log.d("referenceList", "referenceList: " + listResult.getItems());
-//
-  //                      // Download directly from StorageReference using Glide
-    //                   /* Glide.with(MainActivity.this)
-      //                          .load(listResult.getItems())
-        //                        .into(holder.newsImage);*/
-//
-  //                  }
-    //            });
+         adapter = new NewsAdapter(new ArrayList<>(), MainActivity.this , this);
+        binding.recyclerAdapter.setAdapter(adapter);
+        RecyclerView.LayoutManager lm = new LinearLayoutManager(MainActivity.this, RecyclerView.VERTICAL,
+                false);
+        binding.recyclerAdapter.setLayoutManager(lm);
+
 
         fireStore.collection("News")
                 .get()
@@ -90,13 +79,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
                                 Log.d("policy", "onComplete: " + newsClass.getPolicy());
                             }
 
-                            NewsAdapter adapter = new NewsAdapter(list, MainActivity.this , MainActivity.this);
                             Log.d("policy", "onComplete: " + newsclass.getPolicy());
 
-                            binding.recyclerAdapter.setAdapter(adapter);
-                            RecyclerView.LayoutManager lm = new LinearLayoutManager(MainActivity.this, RecyclerView.VERTICAL,
-                                    false);
-                            binding.recyclerAdapter.setLayoutManager(lm);
+                            adapter.setData(list);
+
                         } else {
                             Log.d("TAG", "onComplete: " + task.getException().getMessage());
                         }
@@ -109,8 +95,10 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
         news = newsClass ;
 
+        addToFavorite();
+
         Log.d("newsClass", "IsFavorite: "+ newsClass);
-        if(isInMyFavorite){
+      /*  if(isInMyFavorite){
 
             addToFavorite();
             // not in favorite , add from favorite
@@ -120,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
             deleteFromFavorite();
             isInMyFavorite = false ;
-        }
+        }*/
     }
 
 
@@ -167,4 +155,64 @@ public class MainActivity extends AppCompatActivity implements Listener{
     }
 
 
-}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.menu_search , menu);
+
+        MenuItem item = menu.findItem(R.id.search);
+
+        SearchView searchView = (SearchView) item.getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                processsearch(s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                processsearch(s);
+                return false;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    private void processsearch(String s) {
+
+        fireStore.collection("News")
+                .orderBy("type").startAt(s).endAt(s+"\uf8ff")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                        if (task.isSuccessful()) {
+
+                            List<NewsClass> list = new ArrayList<>();
+
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                NewsClass newsClass = document.toObject(NewsClass.class);
+                                newsClass.setDocumentId(document.getId());
+                                list.add(newsClass);
+                                newsclass = newsClass ;
+                            }
+
+                            adapter.setData(list);
+
+                        } else {
+                            Log.d("TAG", "onComplete: " + task.getException().getMessage());
+                        }
+                    }
+                });
+
+    }
+
+
+    }
+
+
+

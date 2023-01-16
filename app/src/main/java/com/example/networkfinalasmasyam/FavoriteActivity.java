@@ -15,12 +15,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FavoriteActivity extends AppCompatActivity {
+public class FavoriteActivity extends AppCompatActivity implements Listener {
 
     ActivityFavoriteBinding binding ;
 
@@ -28,6 +29,8 @@ public class FavoriteActivity extends AppCompatActivity {
 
     FirebaseFirestore fireStore ;
     FirebaseStorage firebaseStorage ;
+
+    NewsClass newsClass ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,18 +42,16 @@ public class FavoriteActivity extends AppCompatActivity {
         fireStore = FirebaseFirestore.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
 
-        fireStore.collection("Favorite").document(currentUser.getUid())
+        fireStore.collection("Favorite").document(currentUser.getUid()).collection("MyFavorite")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                        if(task.isSuccessful()){
+                       if(task.isSuccessful()){
 
-                            NewsClass newsClass = task.getResult().toObject(NewsClass.class);
-                            List<NewsClass> list = new ArrayList<>() ;
-                            list.add(newsClass);
-                            NewsAdapter adapter = new NewsAdapter(list , FavoriteActivity.this);
+                            List<NewsClass> newsClass = task.getResult().toObjects(NewsClass.class);
+                            NewsAdapter adapter = new NewsAdapter(newsClass , FavoriteActivity.this  , FavoriteActivity.this);
                             binding.recyclerAdapter.setAdapter(adapter);
                             RecyclerView.LayoutManager lm = new LinearLayoutManager(FavoriteActivity.this , RecyclerView.VERTICAL ,
                                     false);
@@ -60,6 +61,38 @@ public class FavoriteActivity extends AppCompatActivity {
                             Toast.makeText(FavoriteActivity.this, "Failed get date from fireStore" +
                                     task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
+
+                    }
+                });
+
+    }
+
+    @Override
+    public void IsFavorite(int position, NewsClass newsClass) {
+
+        this.newsClass = newsClass ;
+        deleteFromFavorite();
+
+
+    }
+
+    public void deleteFromFavorite(){
+
+        fireStore.collection("Favorite").document(currentUser.getUid()).collection("MyFavorite")
+                .document(newsClass.getDocumentId())
+                .delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        if(task.isSuccessful()){
+                            Toast.makeText(FavoriteActivity.this, "Remove from your favorite List...", Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(FavoriteActivity.this, "Failed to remove from your favorite due to" +
+                                    task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+
+                        }
+
                     }
                 });
 

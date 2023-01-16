@@ -5,6 +5,15 @@ public class NewsClass {
     String policy;
     String image ;
     String documentId;
+    String type ;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getDocumentId() {
         return documentId;

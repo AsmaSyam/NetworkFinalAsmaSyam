@@ -29,10 +29,10 @@ public class LoginActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
 
-        /* FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         if (!(firebaseUser==null)){
             startActivity(new Intent(LoginActivity.this , ProfileActivity.class));
-        }*/
+        }
 
 
         binding.Login.setOnClickListener(new View.OnClickListener() {

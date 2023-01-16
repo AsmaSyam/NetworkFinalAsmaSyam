@@ -38,6 +38,11 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         this.listener = listener ;
     }
 
+   public void setData(List<NewsClass> list){
+        this.list = list ;
+        notifyDataSetChanged();
+    }
+
 
 
     @NonNull
@@ -67,11 +72,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             @Override
             public void onClick(View view) {
 
-                NewsClass newsClass = new NewsClass();
-                newsClass.setPolicy(policy);
-                newsClass.setImage(image);
-                newsClass.setDocumentId(documentId);
-                listener.IsFavorite(pos , newsClass);
+
+                listener.IsFavorite(pos , list.get(pos));
             }
         });
 
@@ -79,6 +81,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
     @Override
     public int getItemCount() {
+        if(list == null)
+            return  0 ;
         return list.size();
     }
 
