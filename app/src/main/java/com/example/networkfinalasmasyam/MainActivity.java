@@ -33,8 +33,9 @@ public class MainActivity extends AppCompatActivity implements Listener{
 
     boolean isInMyFavorite ;
 
-    NewsClass newsClass ;
+    NewsClass newsclass;
 
+    NewsClass news ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,9 +85,14 @@ public class MainActivity extends AppCompatActivity implements Listener{
                                 NewsClass newsClass = document.toObject(NewsClass.class);
                                 newsClass.setDocumentId(document.getId());
                                 list.add(newsClass);
+                                newsclass = newsClass ;
+
+                                Log.d("policy", "onComplete: " + newsClass.getPolicy());
                             }
 
                             NewsAdapter adapter = new NewsAdapter(list, MainActivity.this , MainActivity.this);
+                            Log.d("policy", "onComplete: " + newsclass.getPolicy());
+
                             binding.recyclerAdapter.setAdapter(adapter);
                             RecyclerView.LayoutManager lm = new LinearLayoutManager(MainActivity.this, RecyclerView.VERTICAL,
                                     false);
@@ -101,16 +107,16 @@ public class MainActivity extends AppCompatActivity implements Listener{
     @Override
     public void IsFavorite(int position, NewsClass newsClass) {
 
-        newsClass = newsClass ;
+        news = newsClass ;
 
         Log.d("newsClass", "IsFavorite: "+ newsClass);
         if(isInMyFavorite){
 
             addToFavorite();
-            // in favorite , remove from favorite
+            // not in favorite , add from favorite
             isInMyFavorite = true ;
         }else{
-            // not in favorite , add to favorite
+            //  in favorite , remove to favorite
 
             deleteFromFavorite();
             isInMyFavorite = false ;
@@ -121,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
     public void addToFavorite(){
 
         fireStore.collection("Favorite").document(currentUser.getUid()).collection("MyFavorite")
-                .document(newsClass.getDocumentId()).set(newsClass)
+                .document(news.getDocumentId()).set(news)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -141,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
     public void deleteFromFavorite(){
 
         fireStore.collection("Favorite").document(currentUser.getUid()).collection("MyFavorite")
-                .document(newsClass.getDocumentId())
+                .document(news.getDocumentId())
                 .delete()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
