@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements Listener{
     private void processsearch(String s) {
 
         fireStore.collection("News")
-                .orderBy("type").startAt(s).endAt(s+"\uf8ff")
+                .orderBy("policy").startAt(s).endAt(s+"\uf8ff")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override

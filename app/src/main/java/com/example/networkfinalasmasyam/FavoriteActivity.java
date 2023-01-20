@@ -35,6 +35,8 @@ public class FavoriteActivity extends AppCompatActivity implements Listener {
     NewsAdapter adapter ;
     List<NewsClass> list ;
 
+    int pos ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,10 +75,10 @@ public class FavoriteActivity extends AppCompatActivity implements Listener {
     @Override
     public void IsFavorite(int position, NewsClass newsClass) {
 
+        pos = position ;
         this.newsClass = newsClass ;
         deleteFromFavorite();
-        list.remove(position);
-        adapter.notifyDataSetChanged();
+
     }
 
     public void deleteFromFavorite(){
@@ -89,6 +91,8 @@ public class FavoriteActivity extends AppCompatActivity implements Listener {
                     public void onComplete(@NonNull Task<Void> task) {
 
                         if(task.isSuccessful()){
+                            list.remove(newsClass);
+                            adapter.notifyItemRemoved(pos);
                             Toast.makeText(FavoriteActivity.this, "Remove from your favorite List...", Toast.LENGTH_SHORT).show();
 
                         }else {
