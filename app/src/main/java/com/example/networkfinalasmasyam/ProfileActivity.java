@@ -23,7 +23,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -49,6 +48,10 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        //جزئية الادموب
+       // AdRequest adRequest = new AdRequest.Builder().build();
+       // binding.adView.loadAd(adRequest);
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         fireStore = FirebaseFirestore.getInstance();
@@ -224,7 +227,7 @@ public class ProfileActivity extends AppCompatActivity {
                 @Override
                 public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
 
-                    //في المكان هاد بقدر اخزن الرابط هاد في الفيرستور وبكون ربطت ستورج بالفير ستور وهو مطلوب.
+                    //أسماء في المكان هاد بقدر اخزن الرابط هاد في الفيرستور وبكون ربطت ستورج بالفير ستور وهو مطلوب.
                     return  firebaseStorage.getReference()
                             .child("images/"+currentUser.getUid()).getDownloadUrl();
 
@@ -243,7 +246,6 @@ public class ProfileActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu , menu);
         return super.onCreateOptionsMenu(menu);
     }
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
